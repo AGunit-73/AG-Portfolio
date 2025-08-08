@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Abhishek Gurudwar - Portfolio Website
 
 A modern, responsive portfolio website for AI Engineer and Full Stack Developer Abhishek Gurudwar.
@@ -49,3 +50,6 @@ This project is optimized for deployment on Vercel. Simply connect your GitHub r
 ## License
 
 MIT License - feel free to use this template for your own portfolio!
+=======
+Portfolio 
+>>>>>>> 1b3fd63b51419090bcc2763fcbc22b7cd29484b3
