@@ -9,8 +9,8 @@ export default function GradientBackground() {
     left: number
   }
   
-  // Define blob state for tracking transitions
-  type BlobState = {
+  // Define blob state type
+  interface BlobState {
     id: string
     color: {
       light: string
@@ -23,6 +23,7 @@ export default function GradientBackground() {
     opacity: number
     transitionProgress: number // 0 to 1
     transitionDuration: number // seconds
+    isFadingOut: boolean
   }
 
   // Color palettes for blobs - light mode and dark mode variants
@@ -50,14 +51,14 @@ export default function GradientBackground() {
   ]
 
   // Configuration
-  const BLOB_COUNT = 10
-  const MIN_SIZE = 180
-  const MAX_SIZE = 450
-  const MIN_TRANSITION_DURATION = 5 // seconds
-  const MAX_TRANSITION_DURATION = 15 // seconds
-  const TRANSITION_CHECK_INTERVAL = 100 // ms
-  const NEW_TRANSITION_INTERVAL = 500 // ms
-  const BLOB_OPACITY = 0.35
+  const BLOB_COUNT = 12 // More blobs for better coverage
+  const MIN_SIZE = 220 // Slightly larger minimum size
+  const MAX_SIZE = 550 // Larger maximum size
+  const MIN_TRANSITION_DURATION = 2 // seconds - even faster transitions
+  const MAX_TRANSITION_DURATION = 6 // seconds - faster transitions
+  const TRANSITION_CHECK_INTERVAL = 50 // ms - more frequent updates
+  const NEW_TRANSITION_INTERVAL = 800 // ms - more frequent blob changes
+  const BLOB_OPACITY = 0.5 // higher opacity for better visibility
 
   const [blobs, setBlobs] = useState<BlobState[]>([])
   const [mounted, setMounted] = useState(false)
@@ -73,8 +74,8 @@ export default function GradientBackground() {
   
   const getRandomPosition = (): Position => {
     return {
-      top: getRandomNumber(-10, 110), // -10% to 110% (slight overflow)
-      left: getRandomNumber(-10, 110)
+      top: getRandomNumber(-20, 120), // -20% to 120% (more overflow for more visible movement)
+      left: getRandomNumber(-20, 120)
     }
   }
   
@@ -97,6 +98,7 @@ export default function GradientBackground() {
       targetPosition,
       opacity: initialOpacity,
       transitionProgress: 0,
+      isFadingOut: false, // Start fading in
       transitionDuration
     }
   }, []);
@@ -109,86 +111,98 @@ export default function GradientBackground() {
     setMounted(true)
   }, [generateBlob])
 
-  // Animation loop for smooth transitions
+  // Animation loop for blinking effect
   useEffect(() => {
     if (!mounted) return
     
-    // Animation frame handler for smooth transitions
-    let animationFrameId: number
-    let lastTimestamp = 0
+    // We don't need the animation frame for continuous movement anymore
+    // Instead, we'll use setInterval to handle the fading in/out effect
     
-    const updateBlobPositions = (timestamp: number) => {
-      // Calculate time delta in seconds
-      const delta = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0
-      lastTimestamp = timestamp
-      
-      // Update blob transition progress
-      setBlobs(prevBlobs => 
-        prevBlobs.map(blob => {
-          // Update transition progress
-          const newProgress = Math.min(1, blob.transitionProgress + delta / blob.transitionDuration)
-          
-          // Interpolate between current and target positions
-          const interpolatedTop = blob.currentPosition.top + 
-            (blob.targetPosition.top - blob.currentPosition.top) * newProgress
-          const interpolatedLeft = blob.currentPosition.left + 
-            (blob.targetPosition.left - blob.currentPosition.left) * newProgress
-          
-          // If transition is complete, generate new target position
-          if (newProgress >= 1) {
-            return {
-              ...blob,
-              currentPosition: { ...blob.targetPosition },
-              targetPosition: getRandomPosition(),
-              transitionProgress: 0
-            }
-          }
-          
-          // Otherwise continue transition
-          return {
-            ...blob,
-            transitionProgress: newProgress
-          }
-        })
-      )
-      
-      // Continue animation loop
-      animationFrameId = requestAnimationFrame(updateBlobPositions)
-    }
-    
-    // Start animation loop
-    animationFrameId = requestAnimationFrame(updateBlobPositions)
-    
-    // Periodically add/remove blobs to keep the scene dynamic
-    const blobRefreshInterval = setInterval(() => {
-      setBlobs(prevBlobs => {
-        // Randomly select 1-2 blobs to replace
-        const numToReplace = 1 + Math.floor(Math.random() * 2)
-        const newBlobs = [...prevBlobs]
+    // Function to update a single blob's state (fade in or out)
+    const updateBlobState = (blob: BlobState): BlobState => {
+      // If blob is fading out and has reached minimum opacity
+      if (blob.isFadingOut && blob.opacity <= 0.05) {
+        // Switch to fading in at a new position
+        const newPosition = getRandomPosition()
         
-        for (let i = 0; i < numToReplace; i++) {
-          // Find a blob to fade out
-          const indexToReplace = Math.floor(Math.random() * prevBlobs.length)
-          
-          // Start fading it out by reducing opacity
-          newBlobs[indexToReplace] = {
-            ...newBlobs[indexToReplace],
-            opacity: 0 // Start fading out
-          }
-          
-          // Add a new blob that's fading in
-          const newBlob = generateBlob(0) // Start with 0 opacity
-          newBlobs.push(newBlob)
+        // Ensure the new position is far from the current one
+        const minDistance = 70 // Very large distance to ensure positions are far apart
+        
+        // If too close, adjust to ensure visible movement
+        if (Math.abs(newPosition.top - blob.currentPosition.top) < minDistance) {
+          newPosition.top += (Math.random() > 0.5 ? 1 : -1) * minDistance
+        }
+        if (Math.abs(newPosition.left - blob.currentPosition.left) < minDistance) {
+          newPosition.left += (Math.random() > 0.5 ? 1 : -1) * minDistance
         }
         
-        return newBlobs
-      })
-    }, NEW_TRANSITION_INTERVAL)
+        // Start fading in at the new position
+        return {
+          ...blob,
+          currentPosition: newPosition,
+          targetPosition: newPosition, // Same position (no interpolation)
+          opacity: 0.05, // Start almost invisible
+          isFadingOut: false, // Now fading in
+          transitionProgress: 0,
+          transitionDuration: 2 // Fixed 2 second fade-in time
+        }
+      }
+      
+      // If blob is fading in and has reached maximum opacity
+      else if (!blob.isFadingOut && blob.opacity >= BLOB_OPACITY) {
+        // Switch to fading out
+        return {
+          ...blob,
+          opacity: BLOB_OPACITY,
+          isFadingOut: true,
+          transitionDuration: 2 // Fixed 2 second fade-out time
+        }
+      }
+      
+      // Otherwise continue fading in or out
+      // Use a smaller fade step for smoother transitions over ~2 seconds
+      const fadeStep = 0.025 // Smaller step for smoother 2-second transitions
+      const newOpacity = blob.isFadingOut 
+        ? Math.max(0, blob.opacity - fadeStep) // Fading out
+        : Math.min(BLOB_OPACITY, blob.opacity + fadeStep) // Fading in
+      
+      return {
+        ...blob,
+        opacity: newOpacity
+      }
+    }
     
-    // Cleanup animation and intervals on unmount
+    // Update all blobs periodically
+    const blinkInterval = setInterval(() => {
+      setBlobs(prevBlobs => prevBlobs.map(updateBlobState))
+    }, 100) // Update every 100ms for smooth fading
+    
+    // We don't need the blob refresh interval anymore since our blinking effect handles this
+    // Just make sure we have enough blobs initially
+    const ensureEnoughBlobs = setInterval(() => {
+      setBlobs(prevBlobs => {
+        // If we don't have enough blobs, add more
+        if (prevBlobs.length < BLOB_COUNT) {
+          const numToAdd = BLOB_COUNT - prevBlobs.length
+          const newBlobs = [...prevBlobs]
+          
+          for (let i = 0; i < numToAdd; i++) {
+            // Add a new blob that's fading in
+            const newBlob = generateBlob(0) // Start with 0 opacity
+            newBlob.isFadingOut = false // Make sure it's fading in
+            newBlobs.push(newBlob)
+          }
+          
+          return newBlobs
+        }
+        return prevBlobs
+      })
+    }, 1000) // Check once per second
+    
+    // Cleanup intervals on unmount
     return () => {
-      cancelAnimationFrame(animationFrameId)
-      clearInterval(blobRefreshInterval)
+      clearInterval(blinkInterval)
+      clearInterval(ensureEnoughBlobs)
     }
   }, [mounted, generateBlob, getRandomPosition])
 
@@ -208,9 +222,10 @@ export default function GradientBackground() {
       left: `${left}%`,
       transform: "translate(-50%, -50%)",
       opacity: blob.opacity,
-      mixBlendMode: "screen",
+      mixBlendMode: "screen" as React.CSSProperties["mixBlendMode"],
       zIndex: -1,
-      transition: "opacity 1.5s ease-in-out",
+      transition: "opacity 0.8s ease-in-out", // Only transition opacity, not position
+      willChange: "top, left, opacity", // Optimize for animations
     }
   }
   
