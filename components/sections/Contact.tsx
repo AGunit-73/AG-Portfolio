@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 
 export default function Contact() {
   return (
-    <section id="contact" className="relative z-10 py-20 px-6 bg-white/30 dark:bg-gray-800/30">
+    <section id="contact" className="relative z-10 py-20 px-6">
       <div className="max-w-2xl mx-auto">
         <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
           Let's Connect
@@ -15,7 +15,7 @@ export default function Contact() {
         <p className="text-center text-gray-600 dark:text-gray-300 mb-12">
           Interested in collaborating or have a project in mind? I'd love to hear from you.
         </p>
-        <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+        <Card className="border-0 backdrop-blur-sm">
           <CardContent className="p-6">
             <form className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

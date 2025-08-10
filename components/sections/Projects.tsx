@@ -53,7 +53,7 @@ export default function Projects() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => (
-            <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+            <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   {project.title}

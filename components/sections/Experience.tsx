@@ -32,14 +32,14 @@ const experiences = [
 
 export default function Experience() {
   return (
-    <section id="about" className="relative z-10 py-20 px-6 bg-white/30 dark:bg-gray-800/30">
+    <section id="about" className="relative z-10 py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
           Experience
         </h2>
         <div className="space-y-6">
           {experiences.map((exp, index) => (
-            <Card key={index} className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+            <Card key={index} className="border-0 backdrop-blur-sm">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <CardTitle className="text-xl">{exp.title}</CardTitle>
