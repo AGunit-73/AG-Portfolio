@@ -24,9 +24,23 @@ export default function GradientBackground() {
     transitionProgress: number // 0 to 1
     transitionDuration: number // seconds
     isFadingOut: boolean
+    readyToReappear: boolean // Flag to indicate when blob should reappear at new position
+    stableState: boolean // Flag to indicate if blob is in a stable state (fully visible or invisible)
+    lastStateChangeTime: number // Timestamp of last state change for delay calculation
   }
 
   // Color palettes for blobs - light mode and dark mode variants
+  // const palettes = [
+  //   { light: "bg-blue-300", dark: "dark:bg-blue-500" },
+  //   { light: "bg-purple-300", dark: "dark:bg-purple-500" },
+  //   { light: "bg-pink-300", dark: "dark:bg-pink-500" },
+  //   { light: "bg-cyan-300", dark: "dark:bg-cyan-500" },
+  //   { light: "bg-indigo-300", dark: "dark:bg-indigo-500" },
+  //   { light: "bg-fuchsia-300", dark: "dark:bg-fuchsia-500" },
+  //   { light: "bg-teal-300", dark: "dark:bg-teal-500" },
+  //   { light: "bg-violet-300", dark: "dark:bg-violet-500" },
+  // ]
+
   const palettes = [
     { light: "bg-blue-300", dark: "dark:bg-blue-500" },
     { light: "bg-purple-300", dark: "dark:bg-purple-500" },
@@ -36,7 +50,17 @@ export default function GradientBackground() {
     { light: "bg-fuchsia-300", dark: "dark:bg-fuchsia-500" },
     { light: "bg-teal-300", dark: "dark:bg-teal-500" },
     { light: "bg-violet-300", dark: "dark:bg-violet-500" },
-  ]
+  
+    // Added green shades
+    { light: "bg-green-300", dark: "dark:bg-green-500" },
+    { light: "bg-emerald-300", dark: "dark:bg-emerald-500" },
+    { light: "bg-lime-300", dark: "dark:bg-lime-500" },
+  
+    // Added yellow shades
+    { light: "bg-yellow-300", dark: "dark:bg-yellow-500" },
+    { light: "bg-amber-300", dark: "dark:bg-amber-500" },
+  ];
+  
 
   // Shape classes for blobs - more variety
   const shapes = [
@@ -59,6 +83,8 @@ export default function GradientBackground() {
   const TRANSITION_CHECK_INTERVAL = 50 // ms - more frequent updates
   const NEW_TRANSITION_INTERVAL = 800 // ms - more frequent blob changes
   const BLOB_OPACITY = 0.5 // higher opacity for better visibility
+  const DELAY_BEFORE_REAPPEAR = 1000 // ms - delay before reappearing in new position
+  const DELAY_BEFORE_FADE_OUT = 2000 // ms - delay before starting to fade out
 
   const [blobs, setBlobs] = useState<BlobState[]>([])
   const [mounted, setMounted] = useState(false)
@@ -80,7 +106,7 @@ export default function GradientBackground() {
   }
   
   // Generate a random blob
-  const generateBlob = useCallback((initialOpacity: number = BLOB_OPACITY): BlobState => {
+  const generateBlob = useCallback((initialOpacity: number = 0): BlobState => {
     const id = Math.random().toString(36).substring(2, 9)
     const color = getRandomFromArray(palettes)
     const shape = getRandomFromArray(shapes)
@@ -88,6 +114,7 @@ export default function GradientBackground() {
     const currentPosition = getRandomPosition()
     const targetPosition = getRandomPosition()
     const transitionDuration = getRandomNumber(MIN_TRANSITION_DURATION, MAX_TRANSITION_DURATION)
+    const now = Date.now()
     
     return {
       id,
@@ -96,9 +123,12 @@ export default function GradientBackground() {
       size,
       currentPosition,
       targetPosition,
-      opacity: initialOpacity,
+      opacity: initialOpacity, // Start completely invisible
       transitionProgress: 0,
       isFadingOut: false, // Start fading in
+      readyToReappear: false, // Not ready to reappear yet
+      stableState: initialOpacity === 0, // If starting invisible, it's in a stable state
+      lastStateChangeTime: now, // Track when this blob was created
       transitionDuration
     }
   }, []);
@@ -120,42 +150,97 @@ export default function GradientBackground() {
     
     // Function to update a single blob's state (fade in or out)
     const updateBlobState = (blob: BlobState): BlobState => {
-      // If blob is fading out and has reached minimum opacity
-      if (blob.isFadingOut && blob.opacity <= 0.05) {
-        // Switch to fading in at a new position
-        const newPosition = getRandomPosition()
-        
-        // Ensure the new position is far from the current one
-        const minDistance = 70 // Very large distance to ensure positions are far apart
-        
-        // If too close, adjust to ensure visible movement
-        if (Math.abs(newPosition.top - blob.currentPosition.top) < minDistance) {
-          newPosition.top += (Math.random() > 0.5 ? 1 : -1) * minDistance
+      const now = Date.now()
+      const timeSinceLastChange = now - blob.lastStateChangeTime
+      
+      // Check if blob is in a stable state (fully visible or invisible) and needs to wait
+      if (blob.stableState) {
+        // If fully visible and waiting to start fading out
+        if (!blob.isFadingOut && blob.opacity >= BLOB_OPACITY) {
+          // Wait for delay before starting to fade out
+          if (timeSinceLastChange < DELAY_BEFORE_FADE_OUT) {
+            return blob // Keep waiting
+          }
+          
+          // Time to start fading out
+          return {
+            ...blob,
+            isFadingOut: true,
+            stableState: false,
+            lastStateChangeTime: now
+          }
         }
-        if (Math.abs(newPosition.left - blob.currentPosition.left) < minDistance) {
-          newPosition.left += (Math.random() > 0.5 ? 1 : -1) * minDistance
-        }
         
-        // Start fading in at the new position
-        return {
-          ...blob,
-          currentPosition: newPosition,
-          targetPosition: newPosition, // Same position (no interpolation)
-          opacity: 0.05, // Start almost invisible
-          isFadingOut: false, // Now fading in
-          transitionProgress: 0,
-          transitionDuration: 2 // Fixed 2 second fade-in time
+        // If fully invisible and waiting to reappear
+        if (blob.isFadingOut && blob.opacity <= 0 && blob.readyToReappear) {
+          // Wait for delay before reappearing
+          if (timeSinceLastChange < DELAY_BEFORE_REAPPEAR) {
+            return blob // Keep waiting
+          }
+          
+          // Time to reappear at a new position
+          const newPosition = getRandomPosition()
+          
+          // Ensure the new position is VERY far from the current one
+          const minDistance = 100 // Extreme distance to ensure positions are far apart
+          
+          // Calculate distance between current and new position
+          const topDiff = Math.abs(newPosition.top - blob.currentPosition.top)
+          const leftDiff = Math.abs(newPosition.left - blob.currentPosition.left)
+          
+          // If either dimension is too close, force a much larger distance
+          if (topDiff < minDistance) {
+            // Move in the opposite direction of current position to maximize distance
+            const direction = blob.currentPosition.top > 50 ? -1 : 1 // Away from current half of screen
+            newPosition.top = Math.max(0, Math.min(100, blob.currentPosition.top + (direction * minDistance)))
+          }
+          
+          if (leftDiff < minDistance) {
+            // Move in the opposite direction of current position to maximize distance
+            const direction = blob.currentPosition.left > 50 ? -1 : 1 // Away from current half of screen
+            newPosition.left = Math.max(0, Math.min(100, blob.currentPosition.left + (direction * minDistance)))
+          }
+          
+          // Add some randomness to the final position
+          newPosition.top += (Math.random() - 0.5) * 20
+          newPosition.left += (Math.random() - 0.5) * 20
+          
+          // Start fading in at the new position
+          return {
+            ...blob,
+            currentPosition: newPosition,
+            targetPosition: newPosition, // Same position (no interpolation)
+            opacity: 0, // Start completely invisible
+            isFadingOut: false, // Now fading in
+            readyToReappear: false, // Reset flag
+            stableState: false,
+            lastStateChangeTime: now,
+            transitionProgress: 0,
+            transitionDuration: 2 // Fixed 2 second fade-in time
+          }
         }
       }
       
-      // If blob is fading in and has reached maximum opacity
-      else if (!blob.isFadingOut && blob.opacity >= BLOB_OPACITY) {
-        // Switch to fading out
+      // If blob is fading out and has reached zero opacity
+      if (blob.isFadingOut && blob.opacity <= 0) {
+        // Mark as ready to reappear but keep invisible
+        return {
+          ...blob,
+          opacity: 0, // Completely invisible
+          readyToReappear: true,
+          stableState: true, // Now in a stable state (fully invisible)
+          lastStateChangeTime: now
+        }
+      }
+      
+      // If blob is fading in and has reached full opacity
+      if (!blob.isFadingOut && blob.opacity >= BLOB_OPACITY) {
+        // Reached full visibility
         return {
           ...blob,
           opacity: BLOB_OPACITY,
-          isFadingOut: true,
-          transitionDuration: 2 // Fixed 2 second fade-out time
+          stableState: true, // Now in a stable state (fully visible)
+          lastStateChangeTime: now
         }
       }
       
@@ -163,8 +248,8 @@ export default function GradientBackground() {
       // Use a smaller fade step for smoother transitions over ~2 seconds
       const fadeStep = 0.025 // Smaller step for smoother 2-second transitions
       const newOpacity = blob.isFadingOut 
-        ? Math.max(0, blob.opacity - fadeStep) // Fading out
-        : Math.min(BLOB_OPACITY, blob.opacity + fadeStep) // Fading in
+        ? Math.max(0, blob.opacity - fadeStep) // Fading out completely
+        : Math.min(BLOB_OPACITY, blob.opacity + fadeStep) // Fading in from completely invisible
       
       return {
         ...blob,
