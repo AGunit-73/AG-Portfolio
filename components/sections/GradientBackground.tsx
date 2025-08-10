@@ -29,18 +29,6 @@ export default function GradientBackground() {
     lastStateChangeTime: number // Timestamp of last state change for delay calculation
   }
 
-  // Color palettes for blobs - light mode and dark mode variants
-  // const palettes = [
-  //   { light: "bg-blue-300", dark: "dark:bg-blue-500" },
-  //   { light: "bg-purple-300", dark: "dark:bg-purple-500" },
-  //   { light: "bg-pink-300", dark: "dark:bg-pink-500" },
-  //   { light: "bg-cyan-300", dark: "dark:bg-cyan-500" },
-  //   { light: "bg-indigo-300", dark: "dark:bg-indigo-500" },
-  //   { light: "bg-fuchsia-300", dark: "dark:bg-fuchsia-500" },
-  //   { light: "bg-teal-300", dark: "dark:bg-teal-500" },
-  //   { light: "bg-violet-300", dark: "dark:bg-violet-500" },
-  // ]
-
   const palettes = [
     { light: "bg-blue-300", dark: "dark:bg-blue-500" },
     { light: "bg-purple-300", dark: "dark:bg-purple-500" },
