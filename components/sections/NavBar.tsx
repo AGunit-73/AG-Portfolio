@@ -3,13 +3,20 @@
 import { Button } from "@/components/ui/button"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function NavBar() {
   const { theme, setTheme } = useTheme()
   return (
     <nav className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto">
-      <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-        AG
+      <div className="flex items-center gap-3">
+        <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          AG
+        </div>
+        <Avatar className="h-8 w-8 border border-slate-200 dark:border-slate-800">
+          <AvatarImage src="/images/Profile.jpeg" alt="Abhishek avatar" />
+          <AvatarFallback>AG</AvatarFallback>
+        </Avatar>
       </div>
       <div className="hidden md:flex items-center space-x-8">
         <a href="#home" className="hover:text-blue-600 transition-colors">Home</a>

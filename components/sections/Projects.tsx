@@ -4,14 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink } from "lucide-react"
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const projects = [
-  {
-    title: "Agentic RAG Platform",
-    tech: ["LLMs", "RAG", "Python", "FastAPI"],
-    description: "Advanced legal document summarization system using Large Language Models and Retrieval-Augmented Generation for intelligent document processing.",
-    github: "#",
-  },
   {
     title: "RFQ Matching Platform",
     tech: ["FastAPI", "Pinecone", "Python", "ML"],
@@ -31,6 +33,12 @@ const projects = [
     github: "https://github.com/AGunit-73/Ecom-shop",
   },
   {
+    title: "Agentic RAG Platform",
+    tech: ["LLMs", "RAG", "Python", "FastAPI"],
+    description: "Advanced legal document summarization system using Large Language Models and Retrieval-Augmented Generation for intelligent document processing.",
+    github: "#",
+  },
+  {
     title: "AI Food Generator",
     tech: ["ResNet", "Gemini API", "Streamlit", "Computer Vision"],
     description: "AI-powered food recognition and recipe generation system using deep learning models and generative AI for culinary creativity.",
@@ -45,6 +53,7 @@ const projects = [
 ]
 
 export default function Projects() {
+  const [noLinkProject, setNoLinkProject] = useState<string | null>(null)
   return (
     <section id="projects" className="relative z-10 py-20 px-6">
       <div className="max-w-7xl mx-auto">
@@ -57,9 +66,29 @@ export default function Projects() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   {project.title}
-                  <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
+                  {project.github && project.github !== "#" ? (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${project.title} on GitHub`}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Button variant="ghost" size="icon">
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`No GitHub link for ${project.title}`}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setNoLinkProject(project.title)}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Button>
+                  )}
                 </CardTitle>
                 <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech, techIndex) => (
@@ -77,6 +106,16 @@ export default function Projects() {
             </Card>
           ))}
         </div>
+        <Dialog open={!!noLinkProject} onOpenChange={(open) => !open && setNoLinkProject(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>No link available</DialogTitle>
+              <DialogDescription>
+                {noLinkProject ? `${noLinkProject} does not have a GitHub link yet.` : "This project does not have a link yet."}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   )

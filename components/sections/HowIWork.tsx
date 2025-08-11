@@ -11,7 +11,7 @@ const steps = [
 export default function HowIWork() {
   return (
     <section id="process" className="mx-auto max-w-5xl px-6 py-16 text-center">
-      <h1 className="text-2xl font-semibold">How I Work</h1>
+      <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">How I Work</h2>
       <ul className="mt-6 grid gap-6 sm:grid-cols-2">
         {steps.map((s) => (
           <li key={s.title} className="w-full min-h-28 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 text-center">

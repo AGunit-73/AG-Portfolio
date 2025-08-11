@@ -10,13 +10,13 @@ export default function Hero() {
         Abhishek Gurudwar
       </h1>
       <h4 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-green-400 to-yellow-300 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-        I ship software that moves the metric.
+        I ship software that moves the metric
       </h4>
       <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 font-medium">
         AI Engineer • Full Stack Software Engineer • Agentic Systems Architect
       </p>
       <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 font-medium max-w-3xl">
-        Product-minded engineer who learns fast and delivers end-to-end Python/React, cloud, and applied AI (agentic, RAG, fine-tuning) when it matters.
+        Product-minded engineer who learns fast and delivers end-to-end Python/React, cloud, and applied AI (agentic, RAG, fine-tuning) when it matters
       </p>
       <div className="mt-2 mb-8 flex flex-wrap items-center justify-center gap-3">
         {[
