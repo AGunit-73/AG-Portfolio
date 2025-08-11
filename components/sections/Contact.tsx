@@ -41,8 +41,8 @@ export default function Contact() {
         <div className="text-center mt-8">
           <p className="text-gray-600 dark:text-gray-300">
             Or reach out directly at{' '}
-            <a href="mailto:abhishek@example.com" className="text-blue-600 hover:underline">
-              abhishek@example.com
+            <a href="mailto:abhishekgurudwar1997@gmail.com" className="text-blue-600 hover:underline">
+              abhishekgurudwar1997@gmail.com
             </a>
           </p>
         </div>

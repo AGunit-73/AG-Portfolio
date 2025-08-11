@@ -7,25 +7,31 @@ const experiences = [
   {
     title: "AI Engineer",
     company: "Metis Analytics",
-    period: "2023 - Present",
+    period: "01/2025 - Present",
     description: "Developing advanced AI solutions and machine learning models for data analytics and business intelligence platforms.",
   },
   {
     title: "Software Engineering Lead",
-    company: "Isolora",
-    period: "2022 - 2023",
+    company: "Saint Louis University",
+    period: "08/2024 - 12/2024",
     description: "Led development teams in building scalable web applications and implementing best practices for software architecture.",
+  },
+  {
+    title: "Teaching Assistant",
+    company: "Saint Louis University",
+    period: "08/2023 - 12/2024",
+    description: "Assisted in delivering course content, mentoring students, and grading assignments to support effective learning outcomes.",
   },
   {
     title: "Software Development Engineer",
     company: "Accenture",
-    period: "2021 - 2022",
+    period: "06/2020 - 03/2022",
     description: "Developed enterprise-level applications and contributed to digital transformation projects for Fortune 500 clients.",
   },
   {
     title: "Software Engineering Intern",
     company: "ProfEdge",
-    period: "2020 - 2021",
+    period: "01/2020 - 05/2020",
     description: "Built web applications and gained hands-on experience in full-stack development and agile methodologies.",
   },
 ]

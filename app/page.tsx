@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import GradientBackground from '@/components/sections/GradientBackground'
 import NavBar from '@/components/sections/NavBar'
 import Hero from '@/components/sections/Hero'
+import About from '@/components/sections/About'
+import HowIWork from '@/components/sections/HowIWork'
 import Projects from '@/components/sections/Projects'
 import Experience from '@/components/sections/Experience'
 import TechStack from '@/components/sections/TechStack'
@@ -32,6 +34,8 @@ export default function Portfolio() {
       <GradientBackground />
       <NavBar />
       <Hero />
+      <About />
+      <HowIWork />
       <Projects />
       <Experience />
       <TechStack />
