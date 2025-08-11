@@ -1,16 +1,15 @@
-<<<<<<< HEAD
 # Abhishek Gurudwar - Portfolio Website
 
 A modern, responsive portfolio website for AI Engineer and Full Stack Developer Abhishek Gurudwar.
 
 ## Features
 
-- 🎨 Clean, modern design with gradient blob backgrounds
-- 🌙 Dark/Light mode toggle
-- 📱 Fully responsive design
-- ⚡ Built with Next.js 14 and TypeScript
-- 🎯 Optimized for performance and SEO
-- 🎨 Styled with Tailwind CSS and shadcn/ui components
+- Clean, modern design with gradient blob backgrounds
+- Dark/Light mode toggle
+- Fully responsive design
+- Built with Next.js 14 and TypeScript
+- Optimized for performance and SEO
+- Styled with Tailwind CSS and shadcn/ui components
 
 ## Sections
 
@@ -50,6 +49,3 @@ This project is optimized for deployment on Vercel. Simply connect your GitHub r
 ## License
 
 MIT License - feel free to use this template for your own portfolio!
-=======
-Portfolio 
->>>>>>> 1b3fd63b51419090bcc2763fcbc22b7cd29484b3
